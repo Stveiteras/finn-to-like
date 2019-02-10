@@ -6,6 +6,7 @@ import styled from "styled-components";
 
 const StyledWrapper = styled.div`
   max-width: 800px;
+  margin: 0 auto;
   text-align: center;
   font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
 `;
@@ -17,15 +18,17 @@ const StyledHeader = styled.h1`
 
 const StyledCards = styled.div`
   display: flex;
-  margin: 0 auto;
   flex-wrap: wrap;
   align-content: center;
+  justify-content: center;
 `;
 
 const StyledCard = styled.div`
   position: relative;
-  width: 100px;
-  height: 100px;
+  max-width: 50%;
+  max-height: 50%;
+  width: 25%;
+  height: 25%;
   margin: 10px;
 
   @media (min-width: 400px) {
@@ -43,7 +46,11 @@ const cardStrings = [
   "rev",
   "elefant",
   "gris",
-  "zebra"
+  "zebra",
+  "sverre",
+  "brage",
+  "tobias",
+  "synne"
 ];
 
 function Shuffle(o) {
@@ -54,6 +61,10 @@ function Shuffle(o) {
     j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x
   );
   return o;
+}
+
+function reduceToX(inp, x) {
+  return inp.splice(0, x);
 }
 
 function doubleList(inp) {
@@ -92,7 +103,12 @@ function PairSolved(otherCard) {
 const initialCardState = appendOtherMovie(
   Shuffle(
     doubleList(
-      cardStrings.map(name => ({ name, flipped: false, solved: false }))
+      reduceToX(
+        Shuffle(
+          cardStrings.map(name => ({ name, flipped: false, solved: false }))
+        ),
+        8
+      )
     )
   )
 );
