@@ -118,6 +118,7 @@ function Cards() {
   const [flippedCards, setFlippedCards] = useState(0);
   const [cards, setCards] = useState(initialCardState);
   const [solvedCards, setSolvedCards] = useState(0);
+  const [flippedCardsCount, setFlippedCardsCount] = useState(0);
 
   const handleFlip = indexOfCardClicked => {
     const thisCard = cards[indexOfCardClicked];
@@ -128,7 +129,7 @@ function Cards() {
       return;
     }
 
-    // some named function to be invoked
+    // some named functions to be invoked
     const flipCurrentCardButKeepSolved = (card, index) => {
       if (index === indexOfCardClicked) {
         return { ...card, flipped: true };
@@ -150,6 +151,7 @@ function Cards() {
       setCards(cards.map(flipCurrentCardButKeepSolved));
     } else {
       // This means second click
+      setFlippedCardsCount(flippedCardsCount + 1);
       if (PairSolved(otherCard)) {
         setCards(cards.map(markPairSolved));
         setSolvedCards(solvedCards + 1);
@@ -165,7 +167,12 @@ function Cards() {
     <StyledWrapper>
       <StyledHeader>Finn to like</StyledHeader>
 
-      {solvedCards === cards.length / 2 && <p>Du klarte det! Gratulerer!</p>}
+      {solvedCards === cards.length / 2 && (
+        <p>
+          Du klarte det! Du snudde {flippedCardsCount} par. Det betyr at du
+          bommet {flippedCardsCount - cards.length / 2} ganger.{" "}
+        </p>
+      )}
       <StyledCards>
         {cards.map((el, index) => (
           <Card
