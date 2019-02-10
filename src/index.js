@@ -4,8 +4,18 @@ import { useSpring, animated as a } from "react-spring";
 import "./styles.css";
 import styled from "styled-components";
 
-const StyledCards = styled.div`
+const StyledWrapper = styled.div`
   max-width: 800px;
+  text-align: center;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+`;
+
+const StyledHeader = styled.h1`
+  font-size: 30px;
+  text-transform: uppercase;
+`;
+
+const StyledCards = styled.div`
   display: flex;
   margin: 0 auto;
   flex-wrap: wrap;
@@ -71,56 +81,57 @@ function appendOtherMovie(list) {
   });
 }
 
+function FirstCardFlipped(flippedCards) {
+  return flippedCards === 0;
+}
+
+function PairSolved(otherCard) {
+  return otherCard.flipped;
+}
+
+const initialCardState = appendOtherMovie(
+  Shuffle(
+    doubleList(
+      cardStrings.map(name => ({ name, flipped: false, solved: false }))
+    )
+  )
+);
 function Cards() {
   const [flippedCards, setFlippedCards] = useState(0);
-
-  const shuffledList = appendOtherMovie(
-    Shuffle(
-      doubleList(
-        cardStrings.map(name => ({ name, flipped: false, solved: false }))
-      )
-    )
-  );
-
-  const [cards, setCards] = useState(shuffledList);
+  const [cards, setCards] = useState(initialCardState);
+  const [solvedCards, setSolvedCards] = useState(0);
 
   const handleFlip = indexOfCardClicked => {
     const thisCard = cards[indexOfCardClicked];
     const otherCard = cards[thisCard.otherIndex];
 
-    // First click or first click after solving
-    // hide all !solved and flipped
-    // show the selected one
-    if (flippedCards === 0) {
-      setCards(
-        cards.map((card, index) => {
-          if (index === indexOfCardClicked) {
-            return { ...card, flipped: true };
-          }
+    // some named function to be invoked
+    const flipCurrentCardButKeepSolved = (card, index) => {
+      if (index === indexOfCardClicked) {
+        return { ...card, flipped: true };
+      }
 
-          return !card.solved && card.flipped
-            ? { ...card, flipped: false }
-            : card;
-        })
-      );
+      return !card.solved && card.flipped ? { ...card, flipped: false } : card;
+    };
+
+    const markPairSolved = (card, index) =>
+      card.name === thisCard.name
+        ? { ...card, flipped: true, solved: true }
+        : card;
+
+    const flipClickedCard = (card, index) =>
+      index === indexOfCardClicked ? { ...card, flipped: true } : card;
+
+    // Where the magic happens
+    if (FirstCardFlipped(flippedCards)) {
+      setCards(cards.map(flipCurrentCardButKeepSolved));
     } else {
-      //Second click
-      // if solved - mark solved
-      // if not - do nothing!
-      if (otherCard.flipped) {
-        setCards(
-          cards.map((card, index) =>
-            card.name === thisCard.name
-              ? { ...card, flipped: true, solved: true }
-              : card
-          )
-        );
+      // This means second click
+      if (PairSolved(otherCard)) {
+        setCards(cards.map(markPairSolved));
+        setSolvedCards(solvedCards + 1);
       } else {
-        setCards(
-          cards.map((card, index) =>
-            index === indexOfCardClicked ? { ...card, flipped: true } : card
-          )
-        );
+        setCards(cards.map(flipClickedCard));
       }
     }
 
@@ -128,7 +139,10 @@ function Cards() {
   };
 
   return (
-    <>
+    <StyledWrapper>
+      <StyledHeader>Finn to like</StyledHeader>
+
+      {solvedCards === cards.length / 2 && <p>Du klarte det! Gratulerer!</p>}
       <StyledCards>
         {cards.map((el, index) => (
           <Card
@@ -140,7 +154,7 @@ function Cards() {
           />
         ))}
       </StyledCards>
-    </>
+    </StyledWrapper>
   );
 }
 
