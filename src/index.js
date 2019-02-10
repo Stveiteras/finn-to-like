@@ -5,8 +5,10 @@ import "./styles.css";
 import styled from "styled-components";
 
 const StyledWrapper = styled.div`
-  max-width: 800px;
+  max-width: 80vh;
+  max-height: 80vh;
   margin: 0 auto;
+  padding: 0 10px;
   text-align: center;
   font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
 `;
@@ -17,25 +19,25 @@ const StyledHeader = styled.h1`
 `;
 
 const StyledCards = styled.div`
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr;
+  grid-gap: 10px 10px;
   align-content: center;
   justify-content: center;
 `;
 
 const StyledCard = styled.div`
   position: relative;
-  max-width: 50%;
-  max-height: 50%;
-  width: 25%;
-  height: 25%;
-  margin: 10px;
 
-  @media (min-width: 400px) {
-    width: 150px;
-    height: 150px;
-    margin: 20px;
+  &::after {
+    content: "";
+    display: block;
+    padding-bottom: 100%;
   }
+
+  /* width: 150px; */
+  /* margin: 10px; */
 `;
 
 const cardStrings = [
@@ -120,6 +122,11 @@ function Cards() {
   const handleFlip = indexOfCardClicked => {
     const thisCard = cards[indexOfCardClicked];
     const otherCard = cards[thisCard.otherIndex];
+
+    if (thisCard.flipped) {
+      // We are clicking a card already flipped
+      return;
+    }
 
     // some named function to be invoked
     const flipCurrentCardButKeepSolved = (card, index) => {
